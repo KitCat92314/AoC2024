@@ -1,5 +1,7 @@
 file = open("Day6.txt", "r")
 lines = []
+barricade = (-1, -1)
+locations = []
 visited = dict()
 for i in file:
     lines.append(i)
@@ -20,12 +22,16 @@ class guard():
                 return True
             elif map[self.location[0] - 1][self.location[1]] == '#':
                 self.turn()
+            elif self.location[0] - 1 == barricade[0] and self.location[1] == barricade[1]:
+                self.turn()
             else:
                 self.location[0] -= 1
         elif self.dir == 1:
             if self.location[1] + 1 > len(map[self.location[0]]) - 1:
                 return True
             elif map[self.location[0]][self.location[1] + 1] == '#':
+                self.turn()
+            elif self.location[0] == barricade[0] and self.location[1] + 1 == barricade[1]:
                 self.turn()
             else:
                 self.location[1] += 1
@@ -34,6 +40,8 @@ class guard():
                 return True
             elif map[self.location[0] + 1][self.location[1]] == '#':
                 self.turn()
+            elif self.location[0] + 1 == barricade[0] and self.location[1] == barricade[1]:
+                self.turn()
             else:
                 self.location[0] += 1
         elif self.dir == 3:
@@ -41,10 +49,14 @@ class guard():
                 return True
             elif map[self.location[0]][self.location[1] - 1] == '#':
                 self.turn()
+            elif self.location[0] == barricade[0] and self.location[1] - 1 == barricade[1]:
+                self.turn()
             else:
                 self.location[1] -= 1
-        self.memoize(visited)
-    
+        if self.memoize(visited) > 1000:
+            locations.append(barricade)
+            return True
+
     def turn(self):
         self.dir += 1
         if self.dir > 3:
@@ -57,15 +69,31 @@ class guard():
     
     def memoize(self, dictionary):
         if self.location[0] not in dictionary:
-            dictionary[self.location[0]] = set()
-        dictionary[self.location[0]].add(self.location[1])
+            dictionary[self.location[0]] = [set(), 0]
+        dictionary[self.location[0]][0].add(self.location[1])
+        dictionary[self.location[0]][1] += 1
+        return dictionary[self.location[0]][1]
         
 def count():
     sum = 0
     for i in visited:
-        sum += len(visited[i])
+        sum += len(visited[i][0])
     print(sum)
 
-g = guard(lines)
-g.run(lines)
-count()
+def locs():
+    global barricade
+    g = guard(lines)
+    g.run(lines)
+    places = visited.copy()
+    for i in places:
+        for j in places[i][0]:
+            barricade = (i, j)
+            visited.clear()
+            test = guard(lines)
+            test.run(lines)
+    print(len(locations))
+
+locs()
+# g = guard(lines)
+# g.run(lines)
+# count()
