@@ -52,22 +52,13 @@ def bar(line):
             k += int(line[i])
     
     files.reverse()
-    swapping = True
-    while swapping:
-        swapping = False
-        x = 0
-        while x < len(files):
-            y = 0
-            while y < len(dots):
-                if dots[y][1] >= files[x][1] and dots[y][0] < files[x][0]:
-                    for idx in range(files[x][1]):
-                        space[dots[y][0] + idx], space[files[x][0] + idx] = space[files[x][0] + idx], space[dots[y][0] + idx]
-                    dots = recount(space)
-                    files.pop(x)
-                    swapping = True
-                else:
-                    y += 1
-            x += 1
+    for f in files:
+        for d in dots:
+            if d[1] >= f[1] and d[0] < f[0]:
+                    for idx in range(f[1]):
+                        space[d[0] + idx], space[f[0] + idx] = space[f[0] + idx], space[d[0] + idx]
+                    continue
+        dots = recount(space)
     sum = 0
     for idx in range(len(space)):
         if space[idx] != '.':
@@ -84,7 +75,6 @@ def recount(line):
         elif counter != 0:
             dots.append((idx - counter, counter))
             counter = 0
-    print(dots)
     return dots
     
     
