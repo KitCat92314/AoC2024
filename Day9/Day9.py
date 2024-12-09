@@ -51,22 +51,29 @@ def bar(line):
             dots.append((k, int(line[i])))
             k += int(line[i])
     
-    # d = 0
-    # f = 0
-    cont = True
     files.reverse()
-    i = 0
-    while cont:
-        while i < len(files):
-            if dots[0][1] >= files[i][1]:
-                for it in range(files[i][1]):
-                    space[files[i][0] + it], space[dots[0][0] + it] = space[dots[0][0] + it], space[files[i][0] + it]
-                files.pop(i)
-                print(space)
-                dots = recount(space)
-                i = 0
-                break
-            i += 1
+    swapping = True
+    while swapping:
+        swapping = False
+        x = 0
+        while x < len(files):
+            y = 0
+            while y < len(dots):
+                if dots[y][1] >= files[x][1] and dots[y][0] < files[x][0]:
+                    for idx in range(files[x][1]):
+                        space[dots[y][0] + idx], space[files[x][0] + idx] = space[files[x][0] + idx], space[dots[y][0] + idx]
+                    dots = recount(space)
+                    files.pop(x)
+                    swapping = True
+                else:
+                    y += 1
+            x += 1
+    sum = 0
+    for idx in range(len(space)):
+        if space[idx] != '.':
+            sum += idx * int(space[idx])
+    print(sum)
+
         
 def recount(line):
     dots = []
@@ -75,7 +82,7 @@ def recount(line):
         if line[idx] == '.':
             counter += 1
         elif counter != 0:
-            dots.append((idx - 1, counter))
+            dots.append((idx - counter, counter))
             counter = 0
     print(dots)
     return dots
